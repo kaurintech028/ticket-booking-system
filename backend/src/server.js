@@ -22,10 +22,14 @@ const httpServer = http.createServer(app);
 // --- Middleware ---
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: [
+      "https://ticket-booking-system-alpha.vercel.app",
+      "https://ticket-booking-system.vercel.app",
+    ],
     credentials: true,
-  })
+  }),
 );
+
 app.use(express.json());
 
 // --- Routes ---
@@ -45,7 +49,7 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   await connectDB();
 
-  initSocket(httpServer); // must happen before any emitSeatUpdate calls
+  initSocket(httpServer);
   startWaitlistWorker();
   startHoldExpirySweeper();
 
