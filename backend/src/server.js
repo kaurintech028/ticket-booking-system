@@ -27,7 +27,7 @@ app.use(
       "https://ticket-booking-system.vercel.app",
     ],
     credentials: true,
-  }),
+  })
 );
 
 app.use(express.json());
@@ -41,7 +41,9 @@ app.use("/api/seats", seatRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/waitlist", waitlistRoutes);
 
-app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // --- Boot ---
 const PORT = process.env.PORT || 5000;
