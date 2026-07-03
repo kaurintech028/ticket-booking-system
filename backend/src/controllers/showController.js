@@ -2,14 +2,6 @@ import Show from "../models/Show.js";
 import Venue from "../models/Venue.js";
 import Seat from "../models/Seat.js";
 
-/**
- * When an organiser creates a show, we immediately materialise every seat
- * from the venue's seatLayout into the Seat collection with status=available.
- * This makes per-seat status tracking, holds, and bookings simple lookups.
- *
- * Row labels: A, B, C... Col labels: 1, 2, 3...
- * So a 3-row x 5-col block starting at row "A" produces: A1-A5, B1-B5, C1-C5
- */
 async function generateSeatsForShow(showId, venue, pricing) {
   const priceMap = {};
   pricing.forEach((p) => (priceMap[p.category] = p.price));
@@ -20,9 +12,12 @@ async function generateSeatsForShow(showId, venue, pricing) {
       ? block.rowLabelStart.charCodeAt(0)
       : "A".charCodeAt(0);
 
-    for (let r = 0; r < block.rows; r++) {
+    const cols = block.cols || block.seatsPerRow || 10;
+    const rows = block.rows || 5;
+
+    for (let r = 0; r < rows; r++) {
       const rowLabel = String.fromCharCode(startCharCode + r);
-      for (let c = 1; c <= block.cols; c++) {
+      for (let c = 1; c <= cols; c++) {
         seats.push({
           show: showId,
           label: `${rowLabel}${c}`,
@@ -34,6 +29,7 @@ async function generateSeatsForShow(showId, venue, pricing) {
     }
   }
 
+  console.log(`Generating ${seats.length} seats for show ${showId}`);
   await Seat.insertMany(seats);
 }
 
@@ -61,6 +57,7 @@ export async function createShow(req, res) {
 
     res.status(201).json(show);
   } catch (err) {
+    console.error("createShow error:", err);
     res.status(500).json({ message: err.message });
   }
 }
@@ -101,17 +98,20 @@ export async function getOrganiserShows(req, res) {
   }
 }
 
-// Organiser: booking summary + revenue for a show
 export async function getShowRevenue(req, res) {
   try {
     const show = await Show.findOne({
       _id: req.params.id,
       organiser: req.user._id,
     });
-    if (!show) return res.status(404).json({ message: "Show not found or not yours" });
+    if (!show)
+      return res.status(404).json({ message: "Show not found or not yours" });
 
     const Booking = (await import("../models/Booking.js")).default;
-    const bookings = await Booking.find({ show: show._id, status: "confirmed" });
+    const bookings = await Booking.find({
+      show: show._id,
+      status: "confirmed",
+    });
     const totalRevenue = bookings.reduce((sum, b) => sum + b.totalAmount, 0);
 
     const Seat = (await import("../models/Seat.js")).default;
