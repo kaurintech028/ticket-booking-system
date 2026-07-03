@@ -73,6 +73,7 @@ cd frontend && npm run dev
 
 - Backend: https://ticket-booking-system-wntu.onrender.com
 - Frontend: http://localhost:5173
+- Deployed:https://ticket-booking-system-alpha.vercel.app
 
 ---
 
