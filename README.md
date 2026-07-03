@@ -10,6 +10,10 @@ A full-stack ticket booking platform for movies and concerts with real-time seat
 
 https://github.com/kaurintech028/ticket-booking-system/issues/1#issue-4806718531
 ---
+## 🌐 Live Demo
+
+- 🚀 **Frontend:** https://ticket-booking-system-alpha.vercel.app
+- ⚙️ **Backend API:** https://ticket-booking-system-wntu.onrender.com
 ---
 
 ## 🚀 Quick Start
@@ -69,12 +73,6 @@ cd backend && npm run dev
 
 # Terminal 2 — Frontend
 cd frontend && npm run dev
-```
-- Deployed:https://ticket-booking-system-alpha.vercel.app
-- Backend: https://ticket-booking-system-wntu.onrender.com
-- Frontend: http://localhost:5173
-
-
 ---
 
 ## 📦 Project Structure
@@ -299,6 +297,4 @@ For production, consider [Resend](https://resend.com) or [Brevo](https://brevo.c
 
 Set all `.env` variables as environment variables in your hosting dashboard.
 
-##🌐 Live Demo
-- 🚀 Frontend:https://ticket-booking-system-alpha.vercel.app
-- ⚙️ Backend:https://ticket-booking-system-wntu.onrender.com
+
