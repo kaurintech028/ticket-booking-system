@@ -70,10 +70,10 @@ cd backend && npm run dev
 # Terminal 2 — Frontend
 cd frontend && npm run dev
 ```
-
+- Deployed:https://ticket-booking-system-alpha.vercel.app
 - Backend: https://ticket-booking-system-wntu.onrender.com
 - Frontend: http://localhost:5173
-- Deployed:https://ticket-booking-system-alpha.vercel.app
+
 
 ---
 
