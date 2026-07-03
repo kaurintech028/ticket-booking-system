@@ -1,0 +1,282 @@
+:root {
+  --bg: #0a0612;
+  --bg-card: #1a0f2e;
+  --bg-card-hover: #24153f;
+  --border: #3d2463;
+  --primary: #ff2fd0;
+  --primary-hover: #e619ba;
+  --electric: #00e5ff;
+  --gold: #ffd60a;
+  --violet: #8b2fff;
+  --danger: #ff3860;
+  --success: #2ee6a8;
+  --warn: #ffd60a;
+  --text: #fdf6ff;
+  --muted: #b6a3d1;
+  --radius: 10px;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(
+      ellipse at 20% -10%,
+      rgba(139, 47, 255, 0.35),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 85% 0%,
+      rgba(0, 229, 255, 0.25),
+      transparent 50%
+    ),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Spotlight beams sweeping like a concert stage */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    conic-gradient(
+      from 200deg at 15% 0%,
+      rgba(255, 47, 208, 0.18),
+      transparent 25%
+    ),
+    conic-gradient(
+      from 340deg at 85% 0%,
+      rgba(0, 229, 255, 0.18),
+      transparent 25%
+    );
+  animation: sweep 8s ease-in-out infinite alternate;
+}
+
+@keyframes sweep {
+  from {
+    opacity: 0.6;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+}
+
+/* Dazzler sparkle field: bright multi-colour glitter, twinkling */
+.dazzlers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(2px 2px at 8% 15%, var(--gold), transparent),
+    radial-gradient(2px 2px at 22% 45%, var(--primary), transparent),
+    radial-gradient(2px 2px at 38% 10%, var(--electric), transparent),
+    radial-gradient(1.5px 1.5px at 55% 30%, #fff, transparent),
+    radial-gradient(2px 2px at 68% 60%, var(--violet), transparent),
+    radial-gradient(1.5px 1.5px at 80% 20%, var(--gold), transparent),
+    radial-gradient(2px 2px at 92% 50%, var(--primary), transparent),
+    radial-gradient(1.5px 1.5px at 12% 75%, var(--electric), transparent),
+    radial-gradient(1.5px 1.5px at 46% 85%, #fff, transparent),
+    radial-gradient(2px 2px at 75% 90%, var(--violet), transparent);
+  background-size: 500px 500px;
+  animation:
+    dazzle 2.4s ease-in-out infinite alternate,
+    drift 25s linear infinite;
+}
+
+@keyframes dazzle {
+  from {
+    opacity: 0.5;
+    filter: brightness(1);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1.6);
+  }
+}
+
+@keyframes drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -500px 500px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .dazzlers {
+    animation: none;
+  }
+}
+
+header,
+nav,
+main,
+.page,
+.card,
+.grid-2,
+.grid-3 {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: var(--electric);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+input,
+select,
+textarea {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  width: 100%;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s;
+  position: relative;
+  z-index: 1;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  padding: 10px 22px;
+  transition: all 0.2s;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.02em;
+}
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--violet),
+    var(--electric)
+  );
+  background-size: 200% 200%;
+  color: #0a0612;
+  box-shadow: 0 0 18px rgba(255, 47, 208, 0.45);
+}
+.btn-primary:hover {
+  box-shadow:
+    0 0 28px rgba(255, 47, 208, 0.75),
+    0 0 40px rgba(0, 229, 255, 0.4);
+  background-position: 100% 0%;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-outline:hover {
+  border-color: var(--electric);
+  color: var(--electric);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  box-shadow: 0 0 24px rgba(255, 47, 208, 0.25);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.badge-available {
+  background: #0d3d2f;
+  color: var(--success);
+}
+.badge-held {
+  background: #4a3505;
+  color: var(--warn);
+}
+.badge-booked {
+  background: #4a0a1e;
+  color: var(--danger);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.error-msg {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

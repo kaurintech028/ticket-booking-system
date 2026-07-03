@@ -1,0 +1,8 @@
+.filters { display: flex; gap: 12px; flex-wrap: wrap; }
+.eventCard {
+  cursor: pointer; transition: all 0.2s;
+  padding: 0; overflow: hidden;
+}
+.eventCard:hover { transform: translateY(-3px); border-color: var(--primary); }
+.poster { width: 100%; height: 180px; object-fit: cover; }
+.info { padding: 16px; }
