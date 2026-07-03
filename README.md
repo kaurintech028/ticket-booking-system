@@ -2,10 +2,9 @@
 
 A full-stack ticket booking platform for movies and concerts with real-time seat maps, seat hold TTL, concurrency protection, waitlist auto-assignment, and QR code email tickets.
 
-## 🌐 Live Demo
-
-- 🚀 **Frontend:** https://ticket-booking-system-alpha.vercel.app
-- ⚙️ **Backend:** https://ticket-booking-system-wntu.onrender.com
+🌐 Live Demo
+- 🚀 Frontend:https://ticket-booking-system-alpha.vercel.app
+- ⚙️ Backend:https://ticket-booking-system-wntu.onrender.com
 
 ---
 
