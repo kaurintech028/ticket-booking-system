@@ -21,7 +21,10 @@ export default function SeatMap({ showId, onSelectionChange, currentUserId }) {
 
   // Subscribe to real-time updates via Socket.io
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000");
+    const socket = io(
+      import.meta.env.VITE_SOCKET_URL ||
+        "https://ticket-booking-system-wntu.onrender.com",
+    );
     socketRef.current = socket;
     socket.emit("join-show", showId);
 
@@ -52,9 +55,7 @@ export default function SeatMap({ showId, onSelectionChange, currentUserId }) {
 
   // Notify parent of selection changes
   useEffect(() => {
-    onSelectionChange?.(
-      seats.filter((s) => selected.has(String(s._id)))
-    );
+    onSelectionChange?.(seats.filter((s) => selected.has(String(s._id))));
   }, [selected, seats]);
 
   function toggleSeat(seat) {
@@ -82,7 +83,8 @@ export default function SeatMap({ showId, onSelectionChange, currentUserId }) {
     return acc;
   }, {});
 
-  if (loading) return <p style={{ color: "var(--muted)" }}>Loading seat map…</p>;
+  if (loading)
+    return <p style={{ color: "var(--muted)" }}>Loading seat map…</p>;
 
   return (
     <div className={styles.wrapper}>
@@ -96,7 +98,11 @@ export default function SeatMap({ showId, onSelectionChange, currentUserId }) {
               <span className={styles.rowLabel}>{rowLabel}</span>
               <div className={styles.seats}>
                 {rowSeats
-                  .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }))
+                  .sort((a, b) =>
+                    a.label.localeCompare(b.label, undefined, {
+                      numeric: true,
+                    }),
+                  )
                   .map((seat) => {
                     const isSelected = selected.has(String(seat._id));
                     const isMyHold =

@@ -7,6 +7,7 @@ A full-stack ticket booking platform for movies and concerts with real-time seat
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB (local or [Atlas free tier](https://www.mongodb.com/atlas))
 - Redis (local or [Upstash free tier](https://upstash.com))
@@ -46,6 +47,7 @@ npm run seed
 ```
 
 This creates:
+
 - `admin@ticketapp.com` / `Admin@123`
 - `organiser@ticketapp.com` / `Organiser@123`
 - Sample venue "Grand Arena" (3×10 Premium + 5×15 Standard)
@@ -61,7 +63,7 @@ cd backend && npm run dev
 cd frontend && npm run dev
 ```
 
-- Backend: http://localhost:5000
+- Backend: https://ticket-booking-system-wntu.onrender.com
 - Frontend: http://localhost:5173
 
 ---
@@ -99,133 +101,147 @@ ticket-booking-system/
 ## 🗄 Database Schema
 
 ### User
-| Field | Type | Notes |
-|-------|------|-------|
-| name | String | |
-| email | String | unique |
-| password | String | bcrypt hashed |
-| role | Enum | customer / organiser / admin |
+
+| Field    | Type   | Notes                        |
+| -------- | ------ | ---------------------------- |
+| name     | String |                              |
+| email    | String | unique                       |
+| password | String | bcrypt hashed                |
+| role     | Enum   | customer / organiser / admin |
 
 ### Venue
-| Field | Type | Notes |
-|-------|------|-------|
-| name | String | |
-| address | String | |
-| seatLayout | Array | `[{ category, rows, cols, rowLabelStart }]` |
-| createdBy | ObjectId | ref: User (admin) |
+
+| Field      | Type     | Notes                                       |
+| ---------- | -------- | ------------------------------------------- |
+| name       | String   |                                             |
+| address    | String   |                                             |
+| seatLayout | Array    | `[{ category, rows, cols, rowLabelStart }]` |
+| createdBy  | ObjectId | ref: User (admin)                           |
 
 ### Event
-| Field | Type | Notes |
-|-------|------|-------|
-| title | String | |
-| type | Enum | movie / concert |
-| organiser | ObjectId | ref: User |
+
+| Field     | Type     | Notes           |
+| --------- | -------- | --------------- |
+| title     | String   |                 |
+| type      | Enum     | movie / concert |
+| organiser | ObjectId | ref: User       |
 
 ### Show
-| Field | Type | Notes |
-|-------|------|-------|
-| event | ObjectId | ref: Event |
-| venue | ObjectId | ref: Venue |
-| date | Date | |
-| pricing | Array | `[{ category, price }]` |
 
-### Seat *(one document per seat per show)*
-| Field | Type | Notes |
-|-------|------|-------|
-| show | ObjectId | indexed |
-| label | String | e.g. "A1" |
-| category | String | |
-| price | Number | |
-| status | Enum | available / held / booked |
-| holdBy | ObjectId | ref: User |
-| holdExpiresAt | Date | null when not held |
-| bookingId | ObjectId | ref: Booking (when booked) |
+| Field   | Type     | Notes                   |
+| ------- | -------- | ----------------------- |
+| event   | ObjectId | ref: Event              |
+| venue   | ObjectId | ref: Venue              |
+| date    | Date     |                         |
+| pricing | Array    | `[{ category, price }]` |
+
+### Seat _(one document per seat per show)_
+
+| Field         | Type     | Notes                      |
+| ------------- | -------- | -------------------------- |
+| show          | ObjectId | indexed                    |
+| label         | String   | e.g. "A1"                  |
+| category      | String   |                            |
+| price         | Number   |                            |
+| status        | Enum     | available / held / booked  |
+| holdBy        | ObjectId | ref: User                  |
+| holdExpiresAt | Date     | null when not held         |
+| bookingId     | ObjectId | ref: Booking (when booked) |
 
 **Indexes:** `{ show, label }` unique, `{ show, status }` compound.
 
 ### Booking
-| Field | Type | Notes |
-|-------|------|-------|
-| bookingRef | String | unique, encoded in QR |
-| user | ObjectId | |
-| show | ObjectId | |
-| seats | ObjectId[] | |
-| seatLabels | String[] | denormalized |
-| totalAmount | Number | |
-| status | Enum | confirmed / cancelled |
-| qrCodeDataUrl | String | base64 PNG |
+
+| Field         | Type       | Notes                 |
+| ------------- | ---------- | --------------------- |
+| bookingRef    | String     | unique, encoded in QR |
+| user          | ObjectId   |                       |
+| show          | ObjectId   |                       |
+| seats         | ObjectId[] |                       |
+| seatLabels    | String[]   | denormalized          |
+| totalAmount   | Number     |                       |
+| status        | Enum       | confirmed / cancelled |
+| qrCodeDataUrl | String     | base64 PNG            |
 
 ### Waitlist
-| Field | Type | Notes |
-|-------|------|-------|
-| show | ObjectId | |
-| category | String | |
-| user | ObjectId | |
-| status | Enum | waiting / offered / fulfilled / expired / cancelled |
-| joinedAt | Date | FIFO ordering key |
-| offeredSeat | ObjectId | set when status=offered |
-| offerExpiresAt | Date | set when status=offered |
+
+| Field          | Type     | Notes                                               |
+| -------------- | -------- | --------------------------------------------------- |
+| show           | ObjectId |                                                     |
+| category       | String   |                                                     |
+| user           | ObjectId |                                                     |
+| status         | Enum     | waiting / offered / fulfilled / expired / cancelled |
+| joinedAt       | Date     | FIFO ordering key                                   |
+| offeredSeat    | ObjectId | set when status=offered                             |
+| offerExpiresAt | Date     | set when status=offered                             |
 
 ---
 
 ## 📡 API Reference
 
 ### Auth
-| Method | Endpoint | Role | Description |
-|--------|----------|------|-------------|
-| POST | /api/auth/register | public | Register (customer/organiser) |
-| POST | /api/auth/login | public | Login, returns JWT |
-| GET | /api/auth/me | any | Get current user |
+
+| Method | Endpoint           | Role   | Description                   |
+| ------ | ------------------ | ------ | ----------------------------- |
+| POST   | /api/auth/register | public | Register (customer/organiser) |
+| POST   | /api/auth/login    | public | Login, returns JWT            |
+| GET    | /api/auth/me       | any    | Get current user              |
 
 ### Venues
-| Method | Endpoint | Role |
-|--------|----------|------|
-| GET | /api/venues | public |
-| GET | /api/venues/:id | public |
-| POST | /api/venues | admin |
-| PUT | /api/venues/:id | admin |
-| DELETE | /api/venues/:id | admin |
+
+| Method | Endpoint        | Role   |
+| ------ | --------------- | ------ |
+| GET    | /api/venues     | public |
+| GET    | /api/venues/:id | public |
+| POST   | /api/venues     | admin  |
+| PUT    | /api/venues/:id | admin  |
+| DELETE | /api/venues/:id | admin  |
 
 ### Events
-| Method | Endpoint | Role |
-|--------|----------|------|
-| GET | /api/events?type=&search= | public |
-| GET | /api/events/:id | public |
-| POST | /api/events | organiser |
-| PUT | /api/events/:id | organiser |
-| DELETE | /api/events/:id | organiser |
+
+| Method | Endpoint                  | Role      |
+| ------ | ------------------------- | --------- |
+| GET    | /api/events?type=&search= | public    |
+| GET    | /api/events/:id           | public    |
+| POST   | /api/events               | organiser |
+| PUT    | /api/events/:id           | organiser |
+| DELETE | /api/events/:id           | organiser |
 
 ### Shows
-| Method | Endpoint | Role |
-|--------|----------|------|
-| GET | /api/shows/event/:eventId | public |
-| GET | /api/shows/:id | public |
-| POST | /api/shows | organiser |
-| GET | /api/shows/organiser/my-shows | organiser |
-| GET | /api/shows/organiser/:id/revenue | organiser |
+
+| Method | Endpoint                         | Role      |
+| ------ | -------------------------------- | --------- |
+| GET    | /api/shows/event/:eventId        | public    |
+| GET    | /api/shows/:id                   | public    |
+| POST   | /api/shows                       | organiser |
+| GET    | /api/shows/organiser/my-shows    | organiser |
+| GET    | /api/shows/organiser/:id/revenue | organiser |
 
 ### Seats
-| Method | Endpoint | Role | Description |
-|--------|----------|------|-------------|
-| GET | /api/seats/show/:showId | public | Full seat map |
-| POST | /api/seats/hold | customer | Atomically hold seats |
-| POST | /api/seats/release | customer | Explicitly release hold |
+
+| Method | Endpoint                | Role     | Description             |
+| ------ | ----------------------- | -------- | ----------------------- |
+| GET    | /api/seats/show/:showId | public   | Full seat map           |
+| POST   | /api/seats/hold         | customer | Atomically hold seats   |
+| POST   | /api/seats/release      | customer | Explicitly release hold |
 
 ### Bookings
-| Method | Endpoint | Role |
-|--------|----------|------|
-| POST | /api/bookings/confirm | customer |
-| GET | /api/bookings/my | customer |
-| GET | /api/bookings/:id | customer |
-| POST | /api/bookings/:id/cancel | customer |
+
+| Method | Endpoint                 | Role     |
+| ------ | ------------------------ | -------- |
+| POST   | /api/bookings/confirm    | customer |
+| GET    | /api/bookings/my         | customer |
+| GET    | /api/bookings/:id        | customer |
+| POST   | /api/bookings/:id/cancel | customer |
 
 ### Waitlist
-| Method | Endpoint | Role |
-|--------|----------|------|
-| POST | /api/waitlist/join | customer |
-| GET | /api/waitlist/my | customer |
-| GET | /api/waitlist/offer/:entryId | customer |
-| DELETE | /api/waitlist/:entryId | customer |
+
+| Method | Endpoint                     | Role     |
+| ------ | ---------------------------- | -------- |
+| POST   | /api/waitlist/join           | customer |
+| GET    | /api/waitlist/my             | customer |
+| GET    | /api/waitlist/offer/:entryId | customer |
+| DELETE | /api/waitlist/:entryId       | customer |
 
 ---
 
@@ -265,11 +281,11 @@ For production, consider [Resend](https://resend.com) or [Brevo](https://brevo.c
 
 ## 🚢 Deployment
 
-| Service | What |
-|---------|------|
-| **Railway / Render** | Backend (Node.js) |
-| **Vercel** | Frontend (Vite React) |
-| **MongoDB Atlas** | Free tier (M0) |
-| **Upstash** | Redis (free tier, 10k commands/day) |
+| Service              | What                                |
+| -------------------- | ----------------------------------- |
+| **Railway / Render** | Backend (Node.js)                   |
+| **Vercel**           | Frontend (Vite React)               |
+| **MongoDB Atlas**    | Free tier (M0)                      |
+| **Upstash**          | Redis (free tier, 10k commands/day) |
 
 Set all `.env` variables as environment variables in your hosting dashboard.
