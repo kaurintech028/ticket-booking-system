@@ -1,6 +1,6 @@
 # 🎟 Ticket Booking System
 
-A full-stack ticket booking platform for movies and concerts with real-time seat maps, seat hold TTL, concurrency protection, waitlist auto-assignment, and QR code email tickets.
+A full-stack ticket booking platform for movies and concerts where customers book seats from a visual map, held seats auto-release on checkout abandonment, sold-out events have a waitlist with automatic seat assignment on cancellation, and every confirmed booking produces an email with a QR code ticket.
 
 ---
 
@@ -11,10 +11,10 @@ https://github.com/kaurintech028/ticket-booking-system/issues/1#issue-4806718531
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Hosted Application
 
-- 🚀 **Frontend:** https://ticket-booking-system-alpha.vercel.app
-- ⚙️ **Backend API:** https://ticket-booking-system-wntu.onrender.com
+- 🚀 **Frontend (Vercel):** https://ticket-booking-system-alpha.vercel.app
+- ⚙️ **Backend API (Render):** https://ticket-booking-system-wntu.onrender.com
 
 > ⚠️ Backend is hosted on Render free tier. On first visit please wait 60 seconds for the server to wake up, then refresh the page.
 
@@ -30,7 +30,7 @@ https://github.com/kaurintech028/ticket-booking-system/issues/1#issue-4806718531
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Setup Guide
 
 ### Prerequisites
 
@@ -57,29 +57,57 @@ cd ../frontend && npm install
 # Backend
 cd backend
 cp .env.example .env
-# Fill in MONGO_URI, REDIS_URL, JWT_SECRET, and SMTP credentials
-
-# Frontend
-cd ../frontend
-cp .env.example .env
-# Set VITE_API_URL and VITE_SOCKET_URL
+# Fill in all values as described below
 ```
 
-### 3. Seed Initial Data
+### 3. .env.example (Backend)
+
+```env
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+
+# MongoDB Atlas connection string
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/ticket-booking?appName=Cluster0
+
+# Upstash Redis URL
+REDIS_URL=rediss://default:<password>@<endpoint>.upstash.io:6379
+
+# JWT
+JWT_SECRET=your_long_random_secret
+JWT_EXPIRES_IN=7d
+
+# Seat hold TTL in minutes
+SEAT_HOLD_TTL_MINUTES=10
+
+# Waitlist offer TTL in minutes
+WAITLIST_OFFER_TTL_MINUTES=15
+
+# Email (Gmail SMTP for local, Resend for production)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=youremail@gmail.com
+SMTP_PASS=your_gmail_app_password
+EMAIL_FROM="Ticket Booking <youremail@gmail.com>"
+
+# Resend API (for production deployment)
+RESEND_API_KEY=re_your_resend_api_key
+```
+
+### 4. Seed Initial Data
 
 ```bash
 cd backend
 npm run seed
 ```
 
-This creates:
-
+Creates:
 - `admin@ticketapp.com` / `Admin@123`
 - `organiser@ticketapp.com` / `Organiser@123`
-- Sample venue "Grand Arena" (3×10 Premium + 5×15 Standard)
+- Sample venue "Grand Arena"
 - Sample event "Rock Night 2025"
 
-### 4. Run
+### 5. Run Locally
 
 ```bash
 # Terminal 1 — Backend
@@ -108,45 +136,13 @@ ticket-booking-system/
 │   │   ├── services/       # waitlistService.js (core offer logic)
 │   │   ├── queues/         # BullMQ waitlist-offer-expiry queue
 │   │   ├── jobs/           # BullMQ worker + hold expiry sweeper cron
-│   │   ├── sockets/        # Socket.io setup + emitSeatUpdate helper
+│   │   ├── sockets/        # Socket.io real-time seat map updates
 │   │   └── utils/          # jwt, qrcode, email, bookingRef, seed
 │   └── package.json
 └── frontend/
     ├── src/
-    │   ├── components/     # Navbar, SeatMap (with socket updates)
-    │   ├── context/        # AuthContext
-    │   ├── pages/          # Login, Register, Events, SeatSelection, Checkout,
-    │   │                   # BookingSuccess, MyBookings, MyWaitlist,
-    │   │                   # OrganiserDashboard, AdminDashboard
-    │   └── services/       # api.js (axios instance with JWT interceptor)
-    └── package.json
-```
-
----
-
-## 🗄 Database Schema
-
-### User
-
-| Field    | Type   | Notes                        |
-| -------- | ------ | ---------------------------- |
-| name     | String |                              |
-| email    | String | unique                       |
-| password | String | bcrypt hashed                |
-| role     | Enum   | customer / organiser / admin |
-
-### Venue
-
-| Field      | Type     | Notes                                       |
-| ---------- | -------- | ------------------------------------------- |
-| name       | String   |                                             |
-| address    | String   |                                             |
-| seatLayout | Array    | `[{ category, rows, cols, rowLabelStart }]` |
-| createdBy  | ObjectId | ref: User (admin)                           |
-
-### Event
-
-| Field     | Type     | Notes           |
-| --------- | -------- | --------------- |
-| title     | String   |                 |
-| type
+    │   ├── components/     # Navbar, SeatMap (real-time socket updates)
+    │   ├── context/        # AuthContext (JWT state)
+    │   ├── pages/          # Login, Register, Events, SeatSelection,
+    │   │                   # Checkout, BookingSuccess, MyBookings,
+    │   │                   # MyWaitlist, OrganiserDashboard, AdminDashboard
