@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 async function sendBrevoEmail({ to, subject, html, attachments = [] }) {
   const body = {
-    sender: { name: "Ticket Booking", email: "b0f92f001@smtp-brevo.com" },
+    sender: { name: "Ticket App", email: "kaurbhatiaishneet@gmail.com" },
     to: [{ email: to }],
     subject,
     htmlContent: html,
