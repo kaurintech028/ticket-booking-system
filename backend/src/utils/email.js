@@ -1,8 +1,6 @@
 import fetch from "node-fetch";
 
-const BREVO_API_KEY =
-  "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";
-
+const BREVO_API_KEY = "const BREVO_API_KEY = process.env.BREVO_API_KEY";
 async function sendBrevoEmail({ to, subject, html, attachments = [] }) {
   const body = {
     sender: { name: "Ticket Booking", email: "b0f92f001@smtp-brevo.com" },
