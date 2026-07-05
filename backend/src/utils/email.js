@@ -1,14 +1,31 @@
-import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "b0f92f001@smtp-brevo.com",
-    pass: "bBw8qx5tzEDT6dLH",
-  },
-});
+const BREVO_API_KEY =
+  "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";
+
+async function sendBrevoEmail({ to, subject, html, attachments = [] }) {
+  const body = {
+    sender: { name: "Ticket Booking", email: "b0f92f001@smtp-brevo.com" },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+  };
+  if (attachments.length) body.attachment = attachments;
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": BREVO_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+}
 
 export async function sendBookingConfirmationEmail({
   to,
@@ -19,8 +36,7 @@ export async function sendBookingConfirmationEmail({
 }) {
   try {
     const qrBase64 = qrCodeDataUrl.split(",")[1];
-    await transporter.sendMail({
-      from: '"Ticket Booking" <b0f92f001@smtp-brevo.com>',
+    await sendBrevoEmail({
       to,
       subject: `Booking Confirmed - ${bookingRef}`,
       html: `
@@ -29,16 +45,9 @@ export async function sendBookingConfirmationEmail({
           <p><b>Booking Ref:</b> ${bookingRef}</p>
           <p><b>Seats:</b> ${seatLabels.join(", ")}</p>
           <p>Your QR code ticket is attached. Show it at the venue entrance.</p>
-          <p style="color: #888; font-size: 12px;">Thank you for booking with Ticket App!</p>
         </div>
       `,
-      attachments: [
-        {
-          filename: `ticket-${bookingRef}.png`,
-          content: qrBase64,
-          encoding: "base64",
-        },
-      ],
+      attachments: [{ name: `ticket-${bookingRef}.png`, content: qrBase64 }],
     });
     console.log("✅ Email sent to", to);
   } catch (err) {
@@ -54,8 +63,7 @@ export async function sendWaitlistOfferEmail({
   expiresInMinutes,
 }) {
   try {
-    await transporter.sendMail({
-      from: '"Ticket Booking" <b0f92f001@smtp-brevo.com>',
+    await sendBrevoEmail({
       to,
       subject: `Seat available! Claim within ${expiresInMinutes} minutes`,
       html: `
@@ -72,8 +80,7 @@ export async function sendWaitlistOfferEmail({
 
 export async function sendCancellationEmail({ to, name, bookingRef }) {
   try {
-    await transporter.sendMail({
-      from: '"Ticket Booking" <b0f92f001@smtp-brevo.com>',
+    await sendBrevoEmail({
       to,
       subject: `Booking Cancelled - ${bookingRef}`,
       html: `<p>Hi ${name}, your booking <b>${bookingRef}</b> has been cancelled.</p>`,
